@@ -27,9 +27,9 @@
             <p class="location">Rigoberto</p>
           </div>
         </div>
-        <span class="material-icons options-icon" ;
-          ><i class="fa-solid fa-ellipsis-vertical"></i
-        ></span>
+        <span class="material-icons options-icon">
+          <i class="fa-solid fa-ellipsis-vertical"></i>
+        </span>
       </div>
 
       <!-- Imagen principal de la publicación -->
@@ -43,20 +43,26 @@
       <!-- Interacción: Me gusta, comentarios, enviar -->
       <div class="post-actions">
         <div class="left-icons">
-          <span class="material-icons"
-            ><i class="fa-regular fa-heart"></i
-          ></span>
-          <span class="material-icons"
-            ><i class="fa-regular fa-comment"></i
-          ></span>
-          <span class="material-icons"
-            ><i class="fa-regular fa-paper-plane"></i
-          ></span>
+          <!-- Funcionalidad de Like -->
+          <span class="material-icons heart-icon">
+            <i class="fa-regular fa-heart"></i>
+          </span>
+          <span id="likes-count">100,000</span>
+
+          <!-- Funcionalidad de Comentarios -->
+          <span class="material-icons comment-icon">
+            <i class="fa-regular fa-comment"></i>
+          </span>
+
+          <!-- Enviar comentarios y likes -->
+          <span class="material-icons send-icon">
+            <i class="fa-regular fa-paper-plane"></i>
+          </span>
         </div>
         <div class="right-icon">
-          <span class="material-icons"
-            ><i class="fa-regular fa-bookmark"></i
-          ></span>
+          <span class="material-icons">
+            <i class="fa-regular fa-bookmark"></i>
+          </span>
         </div>
       </div>
 
@@ -69,15 +75,116 @@
         </p>
         <p>
           Coaxe es una pequeña localidad situada en la provincia de Pontevedra,
-          en la comunidad autónoma de Galicia, en el noroeste de España.
-          Pertenece a la comarca de O Salnés, una zona conocida por su belleza
-          natural y su rica historia. Coaxe se encuentra en un entorno rural,
-          rodeado de hermosos paisajes y campos verdes, lo que lo convierte en
-          un lugar ideal para aquellos que buscan tranquilidad y contacto con la
-          naturaleza. Tierra de vikingos, en Catoira localidad donde se
-          encuentra esta aldea. Por esto y mucho mas vivo en Coaxe.
+          en la comunidad autónoma de Galicia...
         </p>
       </div>
+
+      <!-- Caja de comentario (inicialmente oculta) -->
+      <div id="comment-section" class="hidden">
+        <textarea
+          id="comment-input"
+          placeholder="Escribe tu comentario"
+        ></textarea>
+        <button id="submit-comment">Enviar comentario</button>
+      </div>
     </div>
+
+    <script>
+      // 1. Funcionalidad de Like
+      const heartIcon = document.querySelector(".heart-icon");
+      const likesCount = document.getElementById("likes-count");
+      let likes = parseInt(likesCount.textContent.replace(",", ""));
+
+      heartIcon.addEventListener("click", function () {
+        likes++; // Incrementar los likes
+        likesCount.textContent = likes.toLocaleString(); // Mostrar los likes con formato
+        heartIcon.classList.add("liked"); // Cambiar el color del corazón a rojo
+        heartIcon.innerHTML = '<i class="fa-solid fa-heart"></i>'; // Corazón lleno
+      });
+
+      // 2. Funcionalidad de Comentarios
+      const commentIcon = document.querySelector(".comment-icon");
+      const commentSection = document.getElementById("comment-section");
+      const submitCommentBtn = document.getElementById("submit-comment");
+      const commentInput = document.getElementById("comment-input");
+      const postDescription = document.querySelector(".post-description");
+
+      // Mostrar/ocultar el área de comentarios al hacer clic en el icono de comentarios
+      commentIcon.addEventListener("click", function () {
+        commentSection.classList.toggle("hidden"); // Alternar la visibilidad del área de comentarios
+      });
+
+      // Añadir un nuevo comentario
+      submitCommentBtn.addEventListener("click", function () {
+        const commentText = commentInput.value.trim(); // Obtener el texto del comentario
+        if (commentText) {
+          const newComment = document.createElement("p"); // Crear un nuevo párrafo para el comentario
+          newComment.textContent = commentText; // Asignar el texto del comentario
+
+          // Añadir botones para editar y eliminar
+          const editButton = document.createElement("button");
+          editButton.textContent = "Editar";
+          editButton.classList.add("edit-button");
+
+          const deleteButton = document.createElement("button");
+          deleteButton.textContent = "Eliminar";
+          deleteButton.classList.add("delete-button");
+
+          // Añadir funcionalidad de edición
+          editButton.addEventListener("click", function () {
+            const editedText = prompt(
+              "Editar comentario:",
+              newComment.textContent
+            );
+            if (editedText) {
+              newComment.textContent = editedText;
+            }
+          });
+
+          // Añadir funcionalidad de eliminación
+          deleteButton.addEventListener("click", function () {
+            postDescription.removeChild(newComment);
+            postDescription.removeChild(editButton);
+            postDescription.removeChild(deleteButton);
+          });
+
+          // Añadir el comentario y los botones al DOM
+          postDescription.appendChild(newComment);
+          postDescription.appendChild(editButton);
+          postDescription.appendChild(deleteButton);
+
+          commentInput.value = ""; // Limpiar el área de texto después de enviar
+        }
+      });
+
+      // 3. Funcionalidad para enviar los comentarios y likes por correo (requiere backend)
+      const sendIcon = document.querySelector(".send-icon");
+      sendIcon.addEventListener("click", function () {
+        const comments = Array.from(postDescription.querySelectorAll("p"))
+          .map((p) => p.textContent)
+          .join("\n");
+
+        const data = {
+          comments: comments,
+          likes: likes,
+        };
+
+        // Enviar datos al backend para ser enviados por correo
+        fetch("http://localhost:5000/send-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            alert("Comentarios y likes enviados por correo.");
+          })
+          .catch((error) => {
+            console.error("Error enviando los comentarios:", error);
+          });
+      });
+    </script>
   </body>
 </html>
