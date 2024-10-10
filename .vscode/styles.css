@@ -15,7 +15,7 @@ body {
 
 .post-container {
   background-color: white;
-  border: 1px solid #dbdbdb;
+  border: none;
   width: 400px;
   border-radius: 3px;
   overflow: hidden;
@@ -31,7 +31,6 @@ body {
 .user-info {
   display: flex;
   align-items: center;
-  
 }
 
 .user-info img {
@@ -93,4 +92,7 @@ body {
 
 .post-description strong {
   font-weight: bold;
+}
+.material-icons {
+    font-size: 24px;
 }
