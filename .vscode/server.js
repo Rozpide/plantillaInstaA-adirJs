@@ -11,8 +11,8 @@ app.use(express.json()); // Habilitar el parsing de JSON en solicitudes
 const transporter = nodemailer.createTransport({
   service: "gmail", // Puedes usar Gmail o cualquier otro servicio
   auth: {
-    user: "joserozpide@gmail.com", // Reemplaza con tu correo de Gmail
-    pass: "1970JLrhEuldlmdcnnqa0791", // Reemplaza con tu contraseña de Gmail
+    user: "ejemplo_correo@gmail.com", // Reemplaza con tu correo de Gmail
+    pass: "0000000000000", // Reemplaza con tu contraseña de Gmail
   },
 });
 
